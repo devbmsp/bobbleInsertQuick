@@ -30,10 +30,7 @@ public class DataSet {
         return copy;
     }
 
-    /**
-     * Varre todos os CSVs em folderPath, ignora linhas não numéricas
-     * e retorna uma lista de DataSet prontos.
-     */
+
     public static GenericList<DataSet> loadFromFolder(String folderPath) throws IOException {
         File folder = new File(folderPath);
         File[] files = folder.listFiles();

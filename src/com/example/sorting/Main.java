@@ -8,7 +8,6 @@ public class Main {
         String dataFolder = "conjuntosDeDados";
         String reportFile = "relatorio.csv";
 
-        // Debug rápido: lista o que existe na pasta
         System.out.println("Working dir: " + System.getProperty("user.dir"));
         File folder = new File(dataFolder);
         if (folder.listFiles() != null) {
@@ -18,7 +17,6 @@ public class Main {
         }
         System.out.println("--------------------------------");
 
-        // 1) Carrega todos os DataSets
         GenericList<DataSet> datasets;
         try {
             datasets = DataSet.loadFromFolder(dataFolder);
@@ -27,13 +25,11 @@ public class Main {
             return;
         }
 
-        // 2) Registra algoritmos
         GenericList<SortAlgorithm> algs = new GenericList<>();
         algs.add(new BubbleSort());
         algs.add(new InsertionSort());
         algs.add(new QuickSort());
 
-        // 3) Executa e mede cada combinação
         GenericList<Result> results = new GenericList<>();
         for (int i = 0; i < datasets.size(); i++) {
             DataSet ds = datasets.get(i);
@@ -53,7 +49,6 @@ public class Main {
             }
         }
 
-        // 4) Gera o CSV de relatório
         ReportGenerator.generateCsvReport(results, reportFile);
     }
 }
