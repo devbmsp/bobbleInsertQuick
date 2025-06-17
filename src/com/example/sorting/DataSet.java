@@ -10,9 +10,9 @@ public class DataSet {
 
     private final String name;
     private final Type   type;
-    private final int[]  data;
+    private final GenericList<Integer> data;
 
-    public DataSet(String name, Type type, int[] data) {
+    public DataSet(String name, Type type, GenericList<Integer> data) {
         this.name = name;
         this.type = type;
         this.data = data;
@@ -20,20 +20,19 @@ public class DataSet {
 
     public String getName()    { return name; }
     public Type   getType()    { return type; }
-    public int    size()       { return data.length; }
+    public int    size()       { return data.size(); }
 
-    /** Retorna uma cópia do vetor interno */
-    public int[] getDataCopy() {
-        int[] copy = new int[data.length];
-        for (int i = 0; i < data.length; i++) {
-            copy[i] = data[i];
+    public GenericList<Integer> getDataCopy() {
+        GenericList<Integer> copy = new GenericList<>();
+        for (int i = 0; i < data.size(); i++) {
+            copy.add(data.get(i));
         }
         return copy;
     }
 
     /**
-     * Carrega todos os CSVs de uma pasta, pulando linhas não numéricas.
-     * Cada CSV deve conter um número por linha (possivelmente com cabeçalho).
+     * Varre todos os CSVs em folderPath, ignora linhas não numéricas
+     * e retorna uma lista de DataSet prontos.
      */
     public static GenericList<DataSet> loadFromFolder(String folderPath) throws IOException {
         File folder = new File(folderPath);
@@ -46,38 +45,26 @@ public class DataSet {
                     continue;
                 }
 
-                // Determina o tipo pelo nome do arquivo
                 String fn = f.getName();
-                String lower = fn.toLowerCase();
-                Type t = lower.contains("aleatorio")   ? Type.ALEATORIO
-                        : lower.contains("crescente")   ? Type.CRESCENTE
-                        :                                  Type.DECRESCENTE;
+                Type t = fn.toLowerCase().contains("aleatorio") ? Type.ALEATORIO
+                        : fn.toLowerCase().contains("crescente") ? Type.CRESCENTE
+                        :                                           Type.DECRESCENTE;
 
-                // Lê cada linha, tenta parseInt e pula cabeçalhos/linhas inválidas
                 GenericList<Integer> nums = new GenericList<>();
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 String line;
                 while ((line = br.readLine()) != null) {
                     line = line.trim();
-                    if (line.isEmpty()) {
-                        continue;
-                    }
+                    if (line.isEmpty()) continue;
                     try {
                         nums.add(Integer.parseInt(line));
                     } catch (NumberFormatException e) {
-                        // pula linha que não seja inteiro
+                        // pula cabeçalho
                     }
                 }
                 br.close();
 
-                // Converte para int[]
-                int[] arr = new int[nums.size()];
-                for (int i = 0; i < nums.size(); i++) {
-                    arr[i] = nums.get(i);
-                }
-
-                // Adiciona ao retorno
-                list.add(new DataSet(fn, t, arr));
+                list.add(new DataSet(fn, t, nums));
             }
         }
 

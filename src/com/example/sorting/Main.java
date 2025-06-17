@@ -8,20 +8,17 @@ public class Main {
         String dataFolder = "conjuntosDeDados";
         String reportFile = "relatorio.csv";
 
-        System.out.println("Working directory (user.dir): " + System.getProperty("user.dir"));
+        // Debug rápido: lista o que existe na pasta
+        System.out.println("Working dir: " + System.getProperty("user.dir"));
         File folder = new File(dataFolder);
-        System.out.println("Path usado: " + folder.getAbsolutePath());
-        File[] files = folder.listFiles();
-        if (files == null) {
-            System.out.println(">>> A pasta NÃO EXISTE ou não é um diretório!");
-        } else {
-            System.out.println(">>> Arquivos encontrados em '" + dataFolder + "':");
-            for (File f : files) {
-                System.out.println("    - " + f.getName());
+        if (folder.listFiles() != null) {
+            for (File f : folder.listFiles()) {
+                System.out.println("  • " + f.getName());
             }
         }
-        System.out.println("=======================================================");
+        System.out.println("--------------------------------");
 
+        // 1) Carrega todos os DataSets
         GenericList<DataSet> datasets;
         try {
             datasets = DataSet.loadFromFolder(dataFolder);
@@ -30,36 +27,33 @@ public class Main {
             return;
         }
 
-        GenericList<SortAlgorithm> algorithms = new GenericList<>();
-        algorithms.add(new BubbleSort());
-        algorithms.add(new InsertionSort());
-        algorithms.add(new QuickSort());
+        // 2) Registra algoritmos
+        GenericList<SortAlgorithm> algs = new GenericList<>();
+        algs.add(new BubbleSort());
+        algs.add(new InsertionSort());
+        algs.add(new QuickSort());
 
+        // 3) Executa e mede cada combinação
         GenericList<Result> results = new GenericList<>();
         for (int i = 0; i < datasets.size(); i++) {
             DataSet ds = datasets.get(i);
-            for (int j = 0; j < algorithms.size(); j++) {
-                SortAlgorithm alg = algorithms.get(j);
-                int[] copy = ds.getDataCopy();
+            for (int j = 0; j < algs.size(); j++) {
+                SortAlgorithm alg = algs.get(j);
+                GenericList<Integer> copy = ds.getDataCopy();
                 long start = System.nanoTime();
                 alg.sort(copy);
-                long elapsedMs = (System.nanoTime() - start) / 1_000_000;
-                System.out.printf("%s | %s | %s | %d elementos -> %d ms%n",
-                        alg.getName(),
-                        ds.getName(),
-                        ds.getType(),
-                        ds.size(),
-                        elapsedMs);
+                long elapsed = (System.nanoTime() - start) / 1_000_000;
+                System.out.printf(
+                        "%s | %s | %s | %d ➔ %d ms%n",
+                        alg.getName(), ds.getName(), ds.getType(), ds.size(), elapsed
+                );
                 results.add(new Result(
-                        alg.getName(),
-                        ds.getName(),
-                        ds.getType(),
-                        ds.size(),
-                        elapsedMs
+                        alg.getName(), ds.getName(), ds.getType(), ds.size(), elapsed
                 ));
             }
         }
 
+        // 4) Gera o CSV de relatório
         ReportGenerator.generateCsvReport(results, reportFile);
     }
 }

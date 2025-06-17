@@ -1,8 +1,5 @@
 package com.example.sorting;
 
-/**
- * Uma lista dinâmica genérica mínima, feita “na mão”.
- */
 public class GenericList<T> {
     private Object[] elements;
     private int size;
@@ -14,7 +11,6 @@ public class GenericList<T> {
 
     public void add(T item) {
         if (size == elements.length) {
-            // dobra capacidade
             Object[] tmp = new Object[elements.length * 2];
             for (int i = 0; i < elements.length; i++) {
                 tmp[i] = elements[i];
@@ -30,6 +26,13 @@ public class GenericList<T> {
             throw new IndexOutOfBoundsException("Index: " + index);
         }
         return (T) elements[index];
+    }
+
+    public void set(int index, T item) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index);
+        }
+        elements[index] = item;
     }
 
     public int size() {

@@ -1,5 +1,6 @@
 package com.example.sorting;
 
+/** Guarda uma medição: algoritmo, dataset, tipo, tamanho e tempo em ms */
 public class Result {
     private final String            algorithm;
     private final String            dataSetName;
@@ -7,21 +8,20 @@ public class Result {
     private final int               size;
     private final long              timeMs;
 
-    public Result(String alg, String ds, DataSet.Type t, int sz, long tm) {
-        this.algorithm   = alg;
-        this.dataSetName = ds;
-        this.type        = t;
-        this.size        = sz;
-        this.timeMs      = tm;
+    public Result(String algorithm, String dataSetName, DataSet.Type type, int size, long timeMs) {
+        this.algorithm   = algorithm;
+        this.dataSetName = dataSetName;
+        this.type        = type;
+        this.size        = size;
+        this.timeMs      = timeMs;
     }
 
     @Override
     public String toString() {
-        // formato CSV
         return algorithm + "," +
                 dataSetName + "," +
-                type.name() + "," +
-                size + "," +
+                type.name()   + "," +
+                size          + "," +
                 timeMs;
     }
 }
